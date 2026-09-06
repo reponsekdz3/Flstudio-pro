@@ -85,7 +85,64 @@ enum class InstrumentType(val displayName: String, val isMelodic: Boolean, val c
     HIHAT_TRAP_REVERSE("Trap Reversed Cymbal Choke", false, "Hip-Hop"),
     RIDE_JAZZ_CYMBAL("Zildjian Dark Jazz Ride Cymbal", false, "Drums"),
     TOM_FLOOR_BOOM("Deep Floor Tom Resonant Boom", false, "Drums"),
-    TOM_RACK_DRUM("Yamaha Rack Tom Drum", false, "Drums")
+    TOM_RACK_DRUM("Yamaha Rack Tom Drum", false, "Drums"),
+
+    // Strings & Violins Vault
+    VIOLIN_SOLO_EXPRESSIVE("Stradivarius Solo Violin Legato", true, "Strings"),
+    VIOLIN_PIZZICATO("Concert Pizzicato Violin Pluck", true, "Strings"),
+    CELLO_ORCHESTRAL_DEEP("Full Orchestral Cello Sustain", true, "Strings"),
+    ORCHESTRAL_STRING_ENSEMBLE("Symphony 64-Piece String Section", true, "Strings"),
+    VIOLA_WARM_VIBRATO("Warm Chamber Viola Vibrato", true, "Strings"),
+    FIDDLE_FOLK_FAST("Appalachian Folk Fast Fiddle", true, "Strings"),
+    CONTRABASS_STACCATO("Orchestral Double Bass Staccato", true, "Strings"),
+    HARP_CONCERT_GLISS("Concert Grand Harp Pluck", true, "Strings"),
+
+    // Pianos & Keyboards Vault
+    PIANO_STEINWAY_GRAND("Steinway D-274 Concert Grand Piano", true, "Pianos"),
+    PIANO_VINTAGE_UPRIGHT("Yamaha Vintage Upright Honky-Tonk", true, "Pianos"),
+    KEYS_RHODES_STAGE_73("Fender Rhodes Stage 73 Warm EP", true, "Pianos"),
+    KEYS_WURLITZER_200A("Wurlitzer 200A Tremolo EP", true, "Pianos"),
+    KEYS_FM_BELL_DX7("Yamaha DX7 Glass Bell Piano", true, "Pianos"),
+    KEYS_CELESTA_DREAM("Tchaikovsky Fairy Celesta Chime", true, "Pianos"),
+    KEYS_HARPSICHORD_BAROQUE("Baroque Double Harpsichord", true, "Pianos"),
+    KEYS_CHURCH_PIPE_ORGAN("Notre-Dame Grand Pipe Organ", true, "Pianos"),
+    KEYS_HAMMOND_B3("Hammond B3 Rotary Leslie Organ", true, "Pianos"),
+    KEYS_CLAVINET_D6("Hohner Clavinet D6 Funk Wah", true, "Pianos"),
+
+    // Expanded Guitars Vault
+    GUITAR_12_STRING_CHIME("Rickenbacker 12-String Chime", true, "Guitars"),
+    GUITAR_OVERDRIVE_SOLO("Gibson Les Paul Tube Overdrive Solo", true, "Guitars"),
+    GUITAR_MUTED_PALM("Heavy Metal Palm Muted Chug", true, "Guitars"),
+    GUITAR_SURF_TREMOLO("Fender Jazzmaster Surf Tremolo", true, "Guitars"),
+    GUITAR_FLAMENCO_RASGUEADO("Spanish Flamenco Rasgueado", true, "Guitars"),
+    GUITAR_SLIDE_BLUES("Delta Blues Steel Slide Guitar", true, "Guitars"),
+    GUITAR_PEDAL_STEEL("Country Pedal Steel Glissando", true, "Guitars"),
+
+    // Brass & Woodwinds Vault
+    BRASS_TRUMPET_SOLO("Miles Davis Harmon Mute Trumpet", true, "Brass & Winds"),
+    BRASS_TROMBONE_STAB("Heavy Orchestral Trombone Hit", true, "Brass & Winds"),
+    BRASS_FRENCH_HORN("Cinematic French Horn Swell", true, "Brass & Winds"),
+    WOODWIND_FLUTE_JAZZ("Concert Silver Flute Legato", true, "Brass & Winds"),
+    WOODWIND_SAX_TENOR("Smoky Midnight Tenor Saxophone", true, "Brass & Winds"),
+    WOODWIND_CLARINET("Warm Orchestral Bb Clarinet", true, "Brass & Winds"),
+    WOODWIND_OBOE("Symphony Pastoral Oboe", true, "Brass & Winds"),
+
+    // World & Ethnic Vault
+    ETHNIC_SITAR_INDIAN("Indian Classical Sitar Drone", true, "Ethnic"),
+    ETHNIC_KOTO_JAPANESE("Japanese 13-String Koto Pluck", true, "Ethnic"),
+    ETHNIC_KALIMBA_THUMB("African Thumb Kalimba Bell", true, "Ethnic"),
+    ETHNIC_PAN_FLUTE("Andean Highland Pan Flute", true, "Ethnic"),
+    ETHNIC_BAGPIPES_HIGHLAND("Scottish Highland Bagpipes Drone", true, "Ethnic"),
+    ETHNIC_BOUZOUKI_GREEK("Mediterranean Greek Bouzouki", true, "Ethnic"),
+
+    // Expanded Synths, Leads & Choirs Vault
+    SYNTH_CHIP_8BIT("NES 8-Bit Chiptune Square Arp", true, "Synth"),
+    SYNTH_ACID_303("Roland TB-303 Resonant Acid Bassline", true, "Synth"),
+    SYNTH_WARM_BRASS_CS80("Yamaha CS-80 Blade Runner Brass", true, "Synth"),
+    SYNTH_ETHEREAL_CHOIR("Fairlight Ethereal Vocal Choir", true, "Synth"),
+    SYNTH_RETROWAVE_PLUCK("80s Synthwave Juno-106 Arp", true, "Synth"),
+    SYNTH_CYBERPUNK_REESE("Dark Cyberpunk Saturated Reese", true, "Synth"),
+    SYNTH_THEREMIN_GHOST("Eerie Sci-Fi Sine Theremin", true, "Synth")
 }
 
 enum class OscType(val displayName: String) {

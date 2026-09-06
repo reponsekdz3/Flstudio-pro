@@ -109,6 +109,57 @@ class SynthVoice(private val sampleRate: Float = 44100f) {
             InstrumentType.GUITAR_FUNK,
             InstrumentType.GUITAR_BASS -> renderGuitar(channel, note, totalSamples, outputL, outputR, velocity)
 
+            InstrumentType.GUITAR_12_STRING_CHIME,
+            InstrumentType.GUITAR_OVERDRIVE_SOLO,
+            InstrumentType.GUITAR_MUTED_PALM,
+            InstrumentType.GUITAR_SURF_TREMOLO,
+            InstrumentType.GUITAR_FLAMENCO_RASGUEADO,
+            InstrumentType.GUITAR_SLIDE_BLUES,
+            InstrumentType.GUITAR_PEDAL_STEEL -> OrchestralAndKeysSynthesizer.renderGuitarsExtended(channel, note, sampleRate, totalSamples, outputL, outputR, velocity)
+
+            InstrumentType.VIOLIN_SOLO_EXPRESSIVE,
+            InstrumentType.VIOLIN_PIZZICATO,
+            InstrumentType.CELLO_ORCHESTRAL_DEEP,
+            InstrumentType.ORCHESTRAL_STRING_ENSEMBLE,
+            InstrumentType.VIOLA_WARM_VIBRATO,
+            InstrumentType.FIDDLE_FOLK_FAST,
+            InstrumentType.CONTRABASS_STACCATO,
+            InstrumentType.HARP_CONCERT_GLISS -> OrchestralAndKeysSynthesizer.renderViolinAndStrings(channel, note, sampleRate, totalSamples, outputL, outputR, velocity)
+
+            InstrumentType.PIANO_STEINWAY_GRAND,
+            InstrumentType.PIANO_VINTAGE_UPRIGHT,
+            InstrumentType.KEYS_RHODES_STAGE_73,
+            InstrumentType.KEYS_WURLITZER_200A,
+            InstrumentType.KEYS_FM_BELL_DX7,
+            InstrumentType.KEYS_CELESTA_DREAM,
+            InstrumentType.KEYS_HARPSICHORD_BAROQUE,
+            InstrumentType.KEYS_CHURCH_PIPE_ORGAN,
+            InstrumentType.KEYS_HAMMOND_B3,
+            InstrumentType.KEYS_CLAVINET_D6 -> OrchestralAndKeysSynthesizer.renderPianosAndKeys(channel, note, sampleRate, totalSamples, outputL, outputR, velocity)
+
+            InstrumentType.BRASS_TRUMPET_SOLO,
+            InstrumentType.BRASS_TROMBONE_STAB,
+            InstrumentType.BRASS_FRENCH_HORN,
+            InstrumentType.WOODWIND_FLUTE_JAZZ,
+            InstrumentType.WOODWIND_SAX_TENOR,
+            InstrumentType.WOODWIND_CLARINET,
+            InstrumentType.WOODWIND_OBOE -> OrchestralAndKeysSynthesizer.renderBrassAndWoodwinds(channel, note, sampleRate, totalSamples, outputL, outputR, velocity)
+
+            InstrumentType.ETHNIC_SITAR_INDIAN,
+            InstrumentType.ETHNIC_KOTO_JAPANESE,
+            InstrumentType.ETHNIC_KALIMBA_THUMB,
+            InstrumentType.ETHNIC_PAN_FLUTE,
+            InstrumentType.ETHNIC_BAGPIPES_HIGHLAND,
+            InstrumentType.ETHNIC_BOUZOUKI_GREEK -> OrchestralAndKeysSynthesizer.renderEthnicInstruments(channel, note, sampleRate, totalSamples, outputL, outputR, velocity)
+
+            InstrumentType.SYNTH_CHIP_8BIT,
+            InstrumentType.SYNTH_ACID_303,
+            InstrumentType.SYNTH_WARM_BRASS_CS80,
+            InstrumentType.SYNTH_ETHEREAL_CHOIR,
+            InstrumentType.SYNTH_RETROWAVE_PLUCK,
+            InstrumentType.SYNTH_CYBERPUNK_REESE,
+            InstrumentType.SYNTH_THEREMIN_GHOST -> OrchestralAndKeysSynthesizer.renderExtendedSynths(channel, note, sampleRate, totalSamples, outputL, outputR, velocity)
+
             InstrumentType.MIC_SAMPLE -> renderSample(channel, totalSamples, outputL, outputR, velocity)
             InstrumentType.FX_RISER -> renderFxRiser(channel, totalSamples, outputL, outputR, velocity)
             InstrumentType.FX_CRASH -> renderFxCrash(channel, totalSamples, outputL, outputR, velocity)

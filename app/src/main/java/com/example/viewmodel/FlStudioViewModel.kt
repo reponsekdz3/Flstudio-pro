@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.audio.AudioEngine
 import com.example.audio.AudioRecorder
 import com.example.model.*
+import com.example.project.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -45,6 +46,7 @@ data class FlStudioUiState(
     val showAddChannelDialog: Boolean = false,
     val inspectingChannelId: String? = null,
     val showTrackInspectorDialog: Boolean = false,
+    val showExportHubDialog: Boolean = false,
     val projectPresetName: String = "Guitar Studio Legends"
 )
 
@@ -108,6 +110,179 @@ class FlStudioViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         audioEngine.stopEngine()
+    }
+
+    fun openExportHub() {
+        _uiState.update { it.copy(showExportHubDialog = true) }
+    }
+
+    fun closeExportHub() {
+        _uiState.update { it.copy(showExportHubDialog = false) }
+    }
+
+    fun loadCustomProject(loaded: LoadedProjectData) {
+        _uiState.update {
+            it.copy(
+                bpm = loaded.bpm,
+                swing = loaded.swing,
+                playMode = loaded.playMode,
+                totalBars = loaded.totalBars,
+                channels = loaded.channels,
+                selectedChannelId = loaded.channels.firstOrNull()?.id ?: "",
+                patterns = loaded.patterns,
+                selectedPatternId = loaded.selectedPatternId,
+                mixerTracks = loaded.mixerTracks,
+                playlistClips = loaded.playlistClips,
+                projectPresetName = loaded.projectName
+            )
+        }
+        syncEngineState()
+    }
+
+    fun updateChannelMixerTrack(channelId: String, trackIndex: Int) {
+        val clamped = trackIndex.coerceIn(0, 128)
+        _uiState.update { state ->
+            val updated = state.channels.map { ch ->
+                if (ch.id == channelId) ch.copy(mixerTrackIndex = clamped) else ch
+            }
+            state.copy(channels = updated)
+        }
+        syncEngineState()
+    }
+
+    fun fillChannelSteps(channelId: String, interval: Int) {
+        _uiState.update { state ->
+            val updated = state.channels.map { ch ->
+                if (ch.id == channelId) {
+                    val newSteps = BooleanArray(16) { idx -> idx % interval == 0 }
+                    ch.copy(steps = newSteps)
+                } else ch
+            }
+            val currentPat = state.patterns.find { it.id == state.selectedPatternId }
+            val updatedPatterns = if (currentPat != null) {
+                val curSteps = updated.find { it.id == channelId }?.steps ?: BooleanArray(16)
+                val newMap = currentPat.channelSteps.toMutableMap()
+                newMap[channelId] = curSteps.clone()
+                state.patterns.map { if (it.id == currentPat.id) it.copy(channelSteps = newMap) else it }
+            } else state.patterns
+            state.copy(channels = updated, patterns = updatedPatterns)
+        }
+        syncEngineState()
+    }
+
+    fun clearChannelSteps(channelId: String) {
+        _uiState.update { state ->
+            val updated = state.channels.map { ch ->
+                if (ch.id == channelId) ch.copy(steps = BooleanArray(16) { false }) else ch
+            }
+            val currentPat = state.patterns.find { it.id == state.selectedPatternId }
+            val updatedPatterns = if (currentPat != null) {
+                val newMap = currentPat.channelSteps.toMutableMap()
+                newMap[channelId] = BooleanArray(16) { false }
+                state.patterns.map { if (it.id == currentPat.id) it.copy(channelSteps = newMap) else it }
+            } else state.patterns
+            state.copy(channels = updated, patterns = updatedPatterns)
+        }
+        syncEngineState()
+    }
+
+    fun invertChannelSteps(channelId: String) {
+        _uiState.update { state ->
+            val updated = state.channels.map { ch ->
+                if (ch.id == channelId) {
+                    val inv = BooleanArray(16) { idx -> !ch.steps[idx] }
+                    ch.copy(steps = inv)
+                } else ch
+            }
+            val currentPat = state.patterns.find { it.id == state.selectedPatternId }
+            val updatedPatterns = if (currentPat != null) {
+                val curSteps = updated.find { it.id == channelId }?.steps ?: BooleanArray(16)
+                val newMap = currentPat.channelSteps.toMutableMap()
+                newMap[channelId] = curSteps.clone()
+                state.patterns.map { if (it.id == currentPat.id) it.copy(channelSteps = newMap) else it }
+            } else state.patterns
+            state.copy(channels = updated, patterns = updatedPatterns)
+        }
+        syncEngineState()
+    }
+
+    fun cloneChannel(channelId: String) {
+        _uiState.update { state ->
+            val target = state.channels.find { it.id == channelId } ?: return@update state
+            val cloned = target.copy(
+                id = java.util.UUID.randomUUID().toString(),
+                name = "${target.name} (Clone)",
+                steps = target.steps.clone(),
+                notes = target.notes.toList()
+            )
+            state.copy(channels = state.channels + cloned)
+        }
+        syncEngineState()
+    }
+
+    fun deleteChannel(channelId: String) {
+        _uiState.update { state ->
+            if (state.channels.size <= 1) return@update state
+            val remaining = state.channels.filter { it.id != channelId }
+            val newSelected = if (state.selectedChannelId == channelId) remaining.first().id else state.selectedChannelId
+            state.copy(channels = remaining, selectedChannelId = newSelected)
+        }
+        syncEngineState()
+    }
+
+    fun quantizePianoRollNotes(channelId: String, gridDivision: Int) {
+        val division = gridDivision.coerceAtLeast(1)
+        _uiState.update { state ->
+            val updated = state.channels.map { ch ->
+                if (ch.id == channelId) {
+                    val quantized = ch.notes.map { note ->
+                        val snapped = ((note.startStep + division / 2) / division) * division
+                        note.copy(startStep = snapped.coerceIn(0, 15))
+                    }
+                    ch.copy(notes = quantized)
+                } else ch
+            }
+            state.copy(channels = updated)
+        }
+        syncEngineState()
+    }
+
+    fun stampChord(channelId: String, chordType: String, rootPitch: Int, step: Int) {
+        val intervals = when (chordType.uppercase()) {
+            "MIN", "MINOR" -> listOf(0, 3, 7)
+            "MAJ7", "MAJOR 7TH" -> listOf(0, 4, 7, 11)
+            "MIN7", "MINOR 7TH" -> listOf(0, 3, 7, 10)
+            "DOM7", "7TH" -> listOf(0, 4, 7, 10)
+            "SUS4" -> listOf(0, 5, 7)
+            "OCTAVE" -> listOf(0, 12)
+            else -> listOf(0, 4, 7) // Major Triad
+        }
+
+        _uiState.update { state ->
+            val updated = state.channels.map { ch ->
+                if (ch.id == channelId) {
+                    val newNotes = ch.notes.toMutableList()
+                    for (offset in intervals) {
+                        val pitch = rootPitch + offset
+                        newNotes.removeAll { it.pitch == pitch && it.startStep == step }
+                        newNotes.add(NoteEvent(pitch = pitch, startStep = step, durationSteps = 2, velocity = 0.85f))
+                    }
+                    ch.copy(notes = newNotes)
+                } else ch
+            }
+            state.copy(channels = updated)
+        }
+        syncEngineState()
+    }
+
+    fun clearChannelNotes(channelId: String) {
+        _uiState.update { state ->
+            val updated = state.channels.map { ch ->
+                if (ch.id == channelId) ch.copy(notes = emptyList()) else ch
+            }
+            state.copy(channels = updated)
+        }
+        syncEngineState()
     }
 
     fun selectTab(tab: StudioTab) {
@@ -574,6 +749,10 @@ class FlStudioViewModel : ViewModel() {
             InstrumentType.FX_RISER -> 0xFF14B8A6
             InstrumentType.FX_CRASH -> 0xFFE0E7FF
             else -> when (type.category) {
+                "Strings" -> 0xFFD946EF
+                "Pianos" -> 0xFF38BDF8
+                "Brass & Winds" -> 0xFFF59E0B
+                "Ethnic" -> 0xFF10B981
                 "Drums" -> 0xFFFF5722
                 "Amapiano" -> 0xFFEAB308
                 "EDM" -> 0xFF3B82F6
@@ -590,6 +769,10 @@ class FlStudioViewModel : ViewModel() {
             "Drums", "Amapiano" -> if (type == InstrumentType.AMAPIANO_LOG_DRUM) 2 else 1
             "Bass", "Hip-Hop" -> if (type == InstrumentType.TRAP_SNARE_RIM || type == InstrumentType.TRAP_HIHAT_ROLL) 1 else 2
             "Guitars" -> if (type == InstrumentType.GUITAR_BASS) 9 else 3
+            "Pianos" -> 6
+            "Strings" -> 5
+            "Brass & Winds" -> 8
+            "Ethnic" -> 10
             "Synth", "EDM", "Pop" -> if (type == InstrumentType.POP_SUB_KICK || type == InstrumentType.EDM_DROP_KICK) 1 else 4
             "Vocals" -> 7
             "FX" -> 11

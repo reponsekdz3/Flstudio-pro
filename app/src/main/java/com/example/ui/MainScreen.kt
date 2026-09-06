@@ -2,6 +2,7 @@ package com.example.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -102,7 +103,15 @@ fun MainScreen(
                     }
                 },
                 onSelectPattern = { viewModel.selectPattern(it) },
-                onAddPattern = { viewModel.addPattern() }
+                onAddPattern = { viewModel.addPattern() },
+                selectedTab = state.selectedTab,
+                onSelectTab = { viewModel.selectTab(it) },
+                onSaveProject = {
+                    viewModel.openExportHub()
+                },
+                onExportAudio = {
+                    viewModel.openExportHub()
+                }
             )
 
             // Active Tab Screen Content
@@ -124,6 +133,14 @@ fun MainScreen(
                             onChannelSolo = { chId -> viewModel.toggleChannelSolo(chId) },
                             onChannelSelect = { chId -> viewModel.selectChannel(chId) },
                             onAudition = { channel -> viewModel.triggerLiveAudition(channel) },
+                            onVolumeChange = { chId, vol -> viewModel.updateChannelVolume(chId, vol) },
+                            onPanChange = { chId, pan -> viewModel.updateChannelPan(chId, pan) },
+                            onMixerTrackChange = { chId, trk -> viewModel.updateChannelMixerTrack(chId, trk) },
+                            onFillSteps = { chId, interval -> viewModel.fillChannelSteps(chId, interval) },
+                            onClearSteps = { chId -> viewModel.clearChannelSteps(chId) },
+                            onInvertSteps = { chId -> viewModel.invertChannelSteps(chId) },
+                            onCloneChannel = { chId -> viewModel.cloneChannel(chId) },
+                            onDeleteChannel = { chId -> viewModel.deleteChannel(chId) },
                             onOpenPianoRoll = { chId ->
                                 viewModel.selectChannel(chId)
                                 viewModel.selectTab(StudioTab.PIANO_ROLL)
@@ -153,10 +170,23 @@ fun MainScreen(
                             selectedChannelId = state.selectedChannelId,
                             currentStep = state.currentStep,
                             isPlaying = state.isPlaying,
+                            bpm = state.bpm,
+                            playMode = state.playMode,
+                            onTogglePlay = { viewModel.togglePlay() },
+                            onBpmChange = { viewModel.setBpm(it) },
                             onChannelSelect = { viewModel.selectChannel(it) },
                             onNoteToggle = { chId, pitch, step -> viewModel.addOrRemovePianoNote(chId, pitch, step) },
                             onAuditionNote = { ch, pitch ->
                                 viewModel.triggerLiveAudition(ch, NoteEvent(pitch = pitch, durationSteps = 2))
+                            },
+                            onQuantizeNotes = { chId, gridDivision ->
+                                viewModel.quantizePianoRollNotes(chId, gridDivision)
+                            },
+                            onStampChord = { chId, chordType, rootPitch, step ->
+                                viewModel.stampChord(chId, chordType, rootPitch, step)
+                            },
+                            onClearNotes = { chId ->
+                                viewModel.clearChannelNotes(chId)
                             }
                         )
                     }
@@ -284,6 +314,13 @@ fun MainScreen(
                     }
                 )
             }
+        }
+
+        if (state.showExportHubDialog) {
+            ProjectAndAudioExportDialog(
+                viewModel = viewModel,
+                onDismiss = { viewModel.closeExportHub() }
+            )
         }
     }
 }

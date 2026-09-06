@@ -205,7 +205,7 @@ fun AddChannelDialog(
     var selectedCategory by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
 
-    val categories = listOf("All", "Amapiano", "EDM", "Hip-Hop", "Pop", "Drums", "Bass", "Guitars", "Synth", "Vocals", "FX")
+    val categories = listOf("All", "Strings", "Pianos", "Guitars", "Brass & Winds", "Ethnic", "Drums", "Bass", "Synth", "Amapiano", "EDM", "Hip-Hop", "Pop", "Vocals", "FX")
 
     val allInstruments = InstrumentType.values().toList()
     val filteredInstruments = allInstruments.filter { inst ->
@@ -345,6 +345,10 @@ fun AddChannelDialog(
                                         .clip(RoundedCornerShape(6.dp))
                                         .background(
                                             when (inst.category) {
+                                                "Strings" -> Color(0xFFD946EF).copy(alpha = 0.2f)
+                                                "Pianos" -> Color(0xFF38BDF8).copy(alpha = 0.2f)
+                                                "Brass & Winds" -> Color(0xFFF59E0B).copy(alpha = 0.2f)
+                                                "Ethnic" -> Color(0xFF10B981).copy(alpha = 0.2f)
                                                 "Amapiano" -> Color(0xFFEAB308).copy(alpha = 0.2f)
                                                 "EDM" -> Color(0xFF3B82F6).copy(alpha = 0.2f)
                                                 "Hip-Hop" -> Color(0xFF8B5CF6).copy(alpha = 0.2f)
@@ -360,6 +364,10 @@ fun AddChannelDialog(
                                         imageVector = if (inst.isMelodic) Icons.Default.Piano else Icons.Default.MusicNote,
                                         contentDescription = null,
                                         tint = when (inst.category) {
+                                            "Strings" -> Color(0xFFD946EF)
+                                            "Pianos" -> Color(0xFF38BDF8)
+                                            "Brass & Winds" -> Color(0xFFF59E0B)
+                                            "Ethnic" -> Color(0xFF10B981)
                                             "Amapiano" -> Color(0xFFEAB308)
                                             "EDM" -> Color(0xFF3B82F6)
                                             "Hip-Hop" -> Color(0xFF8B5CF6)
