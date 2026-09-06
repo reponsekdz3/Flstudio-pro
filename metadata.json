@@ -1,0 +1,6 @@
+{
+  "name": "FL Studio",
+  "description": "Professional digital audio workstation with interactive channel rack, piano roll, song arranger, mixer with real-time DSP effects, and synthesizer plugins.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
